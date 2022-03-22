@@ -1,0 +1,62 @@
+name: Vendor manifests consumer
+description: "Extracts and processes vendor manifests"
+
+inputs:
+  repository:
+    description: Repository containing vendor manifest(s)
+    type: string
+    required: true
+  ref:
+    description: Repository REF
+    type: string
+    required: false
+    default: master
+  path:
+    description: Directory containing vendor manifest(s)
+    type: string
+    required: false
+  artifactory-repo-url:
+    description: Target Artifactory repository URL
+    type: string
+    required: true
+  artifactory-user:
+    description: Artifactory user
+    type: string
+    required: false
+  artifactory-password:
+    description: Artifactory user password
+    type: string
+    required: false
+  ssh-key:
+    description: SSH public key (deploy key) for accessing the vendor repository
+    required: true
+
+outputs:
+  appGroupId:
+    description: ""
+    value: ${{ steps.metadata.outputs.appGroupId }}
+  appArtifactId:
+    description: ""
+    value: ${{ steps.metadata.outputs.appArtifactId }}
+  appVersion:
+    description: ""
+    value: ${{ steps.metadata.outputs.appVersion }}
+  appCommitId:
+    description: ""
+    value: ${{ steps.metadata.outputs.appCommitId }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Checkout vendor repository
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+        ssh-key: ${{ inputs.ssh-key }}
+        path: ${{ inputs.path }}
+
+    - name: ls
+      shell: bash
+      run: ls ${{ inputs.path }}
