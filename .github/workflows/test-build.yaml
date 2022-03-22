@@ -15,7 +15,7 @@ jobs:
         with:
           repository: amoravek/test-vendor-repo
           ref: master
-          ssh-key: ${{ secrets.VENDOR_REPO_SSH_KEY }}
+          ssh-key: ${{ secrets.VENDOR_REPO_DEPLOY_KEY }}
           artifactory-repo-url: my-repo
           artifactory-user: amoravek
           artifactory-password: password
