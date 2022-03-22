@@ -13,9 +13,9 @@ jobs:
       - name: Process action.yaml
         uses: amoravek/test-action@v1
         with:
-          repository: 'amoravek/test-vendor-repo'
+          repository: "amoravek/test-vendor-repo"
           ref: master
-          ssh-key: ${{ secrets.VENDOR_REPO_DEPLOY_KEY }}
+          ssh-key: "${{ secrets.VENDOR_REPO_DEPLOY_KEY }}"
           artifactory-repo-url: my-repo
           artifactory-user: amoravek
           artifactory-password: password
