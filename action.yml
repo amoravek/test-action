@@ -38,8 +38,8 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: ${{ inputs.repository }}
-        ref: ${{ inputs.ref }}
-        token: ${{ inputs.token }}
+        # ref: ${{ inputs.ref }}
+        # token: ${{ inputs.token }}
         ssh-key: ${{ inputs.ssh-key }}
 
     - name: test
