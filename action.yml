@@ -24,7 +24,7 @@ inputs:
     type: string
     required: false
   ssh-key:
-    description: SSH public key (deploy key) for accessing the vendor repository
+    description: SSH private key (deploy key) for accessing the vendor repository
     required: true
 
 runs:
@@ -32,11 +32,11 @@ runs:
 
   steps:
     - name: Checkout vendor repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
-        ssh-key: ${{ inputs.ssh-key }}
+        ssh-key: "${{ inputs.ssh-key }}"
 
     - name: test
       shell: bash
