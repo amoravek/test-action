@@ -14,7 +14,7 @@ jobs:
         uses: amoravek/test-action@v1
         with:
           repository: "amoravek/test-vendor-repo"
-          ref: master
+          ref: ${{ github.ref }}
           # ssh-key: "${{ secrets.VENDOR_REPO_DEPLOY_KEY }}"
           token: ${{ secrets.VENDOR_REPO_ACCESS_TOKEN }}
           artifactory-repo-url: my-repo
