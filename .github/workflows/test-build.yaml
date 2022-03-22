@@ -1,4 +1,4 @@
-name: build snapshot
+name: test action
 
 on:
   push:
