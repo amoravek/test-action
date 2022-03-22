@@ -27,10 +27,6 @@ inputs:
     description: SSH private key (deploy key) for accessing the vendor repository
     required: true
 
-permissions:
-  id-token: write
-  contents: read
-
 runs:
   using: "composite"
 
