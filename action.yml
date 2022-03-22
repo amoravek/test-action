@@ -6,11 +6,6 @@ inputs:
     description: Repository containing vendor manifest(s)
     type: string
     required: true
-  ref:
-    description: Repository REF
-    type: string
-    required: false
-    default: master
   artifactory-repo-url:
     description: Target Artifactory repository URL
     type: string
