@@ -1,0 +1,21 @@
+apiVersion: artifacts.csas.cz/v1
+kind: ArtifactBatch
+metadata:
+  annotations:
+    annotations.here/any: optional-annotation
+  labels:
+    labels.here/any: optional-label
+spec:
+  artifacts:
+  - yq: 
+    - version: 4.14.1
+      sha256: 28e9623452c5da978ec3630c64d838a94f7a6bdd219da0db6f6cb042b5e06d07
+    - version: 4.13.4
+    - version: 4.13.5
+      sha1: 7f26a158eda40630630156abcd8fc821d4c608e2
+  - k9s:
+    - version: 0.24.15
+      sha256: 0590c32c20cd22416f2a06fad9155257c156e32c60e8757bf96d5a28cb1720dd
+    - version: 0.24.14
+      md5: dca84da3508208ea836d9c0814566af7
+    - version: 0.24.13

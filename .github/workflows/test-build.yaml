@@ -4,28 +4,21 @@ on:
   push:
   workflow_dispatch:
 
-env:
-  MAIN_BRANCH: main
-  DEVELOP_BRANCH: develop
-  MAVEN_SETTINGS_SECURITY: "<settingsSecurity><master>${{ secrets.MAVEN_MASTER_PASSWORD }}</master></settingsSecurity>"
-  IMAGE_REPOSITORY: academy
-
 jobs:
   test-action:
     name: Test action
     runs-on: ubuntu-latest
 
     steps:
-      - name: xxx
+      - name: Process action.yaml
         uses: amoravek/test-action@v1
         with:
           repository: amoravek/test-action
           ref: master
-          path: .
+          ssh-key: ''
           artifactory-repo-url: my-repo
           artifactory-user: amoravek
           artifactory-password: password
-          ssh-key: ''
 
     # outputs:
     #   containerRegistryHost: ${{ steps.common.outputs.containerRegistryHost }}

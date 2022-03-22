@@ -11,10 +11,6 @@ inputs:
     type: string
     required: false
     default: master
-  path:
-    description: Directory containing vendor manifest(s)
-    type: string
-    required: false
   artifactory-repo-url:
     description: Target Artifactory repository URL
     type: string
@@ -31,20 +27,6 @@ inputs:
     description: SSH public key (deploy key) for accessing the vendor repository
     required: true
 
-outputs:
-  appGroupId:
-    description: ""
-    value: ${{ steps.metadata.outputs.appGroupId }}
-  appArtifactId:
-    description: ""
-    value: ${{ steps.metadata.outputs.appArtifactId }}
-  appVersion:
-    description: ""
-    value: ${{ steps.metadata.outputs.appVersion }}
-  appCommitId:
-    description: ""
-    value: ${{ steps.metadata.outputs.appCommitId }}
-
 runs:
   using: "composite"
 
@@ -55,8 +37,7 @@ runs:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
         ssh-key: ${{ inputs.ssh-key }}
-        path: ${{ inputs.path }}
 
-    - name: ls
+    - name: test
       shell: bash
-      run: ls ${{ inputs.path }}
+      run: cat artifacts.yaml
