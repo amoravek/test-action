@@ -3,6 +3,10 @@ name: test action
 on:
   push:
     branches:
+      - '*'
+    ignore-tags:
+      - '*'
+    
   workflow_dispatch:
 
 jobs:
