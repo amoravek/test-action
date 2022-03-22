@@ -25,7 +25,10 @@ inputs:
     required: false
   ssh-key:
     description: SSH private key (deploy key) for accessing the vendor repository
-    required: true
+    required: false
+  token:
+    description: Personal access-token of the target repository
+    required: false
 
 runs:
   using: "composite"
@@ -36,7 +39,8 @@ runs:
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
-        ssh-key: "${{ inputs.ssh-key }}"
+        token: ${{ inputs.token }}
+        ssh-key: ${{ inputs.ssh-key }}
 
     - name: test
       shell: bash
