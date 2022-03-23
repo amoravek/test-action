@@ -2,14 +2,14 @@
 
 set -x -e +o history
 
-artifactBatchFile=$1
-vendorMetadataFile=$2
-artifactoryUser=$3
-artifactoryPassword=$4
-artifactoryBaseUrl=$5
-artifactoryRepo=$6
+# artifactBatchFile=$1
+# vendorMetadataFile=$2
+artifactoryUser=$1
+artifactoryPassword=$2
+artifactoryBaseUrl=$3
+artifactoryRepo=$4
 
-productCount=$(yq e '.spec.artifacts | length' $vendorMetadataFile)
+productCount=$(yq e '.spec.artifacts | length' vendor-metadata.yaml)
 
 echo "$productCount products detected"
 
@@ -27,8 +27,8 @@ checkVersions
 
 i=0
 while [[ $i < $productCount ]]; do
-    productName=$(yq e ".spec.artifacts[$i].name" $vendorMetadataFile)
-    uriTemplate=$(yq e ".spec.artifacts[$i].uriTemplate" $vendorMetadataFile)
+    productName=$(yq e ".spec.artifacts[$i].name" vendor-metadata.yaml)
+    uriTemplate=$(yq e ".spec.artifacts[$i].uriTemplate" vendor-metadata.yaml)
 
     echo "productName[$i]: $productName"
     echo "uriTemplate[$i]: $uriTemplate"
@@ -38,15 +38,15 @@ while [[ $i < $productCount ]]; do
     i=$(($i+1))
 done
 
-productVersionsCount=$(yq e '.spec.artifacts | length' $artifactBatchFile)
+productVersionsCount=$(yq e '.spec.artifacts | length' ./artifacts.yaml)
 
 declare -A productVersions
 
 i=0
 while [[ $i < $productVersionsCount ]]; do
-    productName=$(yq e ".spec.artifacts[$i].name" $artifactBatchFile)
-    version=$(yq e ".spec.artifacts[$i].version" $artifactBatchFile)
-    declaredSha=$(yq e ".spec.artifacts[$i].sha256" $artifactBatchFile)
+    productName=$(yq e ".spec.artifacts[$i].name" ./artifacts.yaml)
+    version=$(yq e ".spec.artifacts[$i].version" ./artifacts.yaml)
+    declaredSha=$(yq e ".spec.artifacts[$i].sha256" ./artifacts.yaml)
     finalUri=$(eval echo "${uriTemplates[$productName]}")
 
     echo "===> Downloading '$productName' from '$finalUri' ..."
