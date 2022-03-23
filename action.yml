@@ -6,7 +6,10 @@ inputs:
     description: Repository containing vendor manifest(s)
     type: string
     required: true
-  artifactory-repo-url:
+  ssh-key:
+    description: SSH private key (deploy key) for accessing the vendor repository
+    required: false
+  artifactory-base-url:
     description: Target Artifactory repository URL
     type: string
     required: true
@@ -18,12 +21,10 @@ inputs:
     description: Artifactory user password
     type: string
     required: false
-  ssh-key:
-    description: SSH private key (deploy key) for accessing the vendor repository
-    required: false
-  token:
-    description: Personal access-token of the target repository
-    required: false
+  artifactory-repo:
+    description: Artifactory target repository
+    type: string
+    required: true
 
 runs:
   using: "composite"
@@ -39,7 +40,7 @@ runs:
       shell: bash
       run: |
         scripts/process-downloads.sh \
-        art-user \
-        art-password \
-        https://art-base-url \
-        art-repo
+        ${{ inputs.artifactory-user }} \
+        ${{ inputs.artifactory-password }} \
+        ${{ inputs.artifactory-base-url }} \
+        ${{ inputs.artifactory-repo }}
