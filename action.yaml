@@ -6,6 +6,10 @@ inputs:
     description: Repository containing vendor manifest(s)
     type: string
     required: true
+  ref:
+    description: Repository ref (branch, tag, commit)
+    type: string
+    required: false
   ssh-key:
     description: SSH private key (deploy key) for accessing the vendor repository
     required: false
@@ -34,6 +38,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
         ssh-key: ${{ inputs.ssh-key }}
 
     - name: Process manifests
