@@ -37,9 +37,9 @@ runs:
     - name: Checkout vendor repository
       uses: actions/checkout@v3
       with:
-        repository: ${{ inputs.repository }}
-        ref: ${{ inputs.ref }}
-        ssh-key: ${{ inputs.ssh-key }}
+        repository: "${{ inputs.repository }}"
+        ref: "${{ inputs.ref }}"
+        ssh-key: "${{ inputs.ssh-key }}"
 
     - name: Process manifests
       shell: bash
