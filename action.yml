@@ -38,8 +38,9 @@ runs:
     - name: Process manifests
       shell: bash
       run: |
-        scripts/process-downloads.sh \
-        art-user \
-        art-password \
-        https://art-base-url \
-        art-repo
+        tree /
+        # scripts/process-downloads.sh \
+        # art-user \
+        # art-password \
+        # https://art-base-url \
+        # art-repo
