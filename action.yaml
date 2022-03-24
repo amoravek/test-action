@@ -42,21 +42,6 @@ runs:
         ref: "${{ inputs.ref }}"
         ssh-key: "${{ inputs.ssh-key }}"
 
-    # - name: checkout 2
-    #   shell: bash
-    #   run: |
-    #     echo "${{ inputs.ssh-key }}" >> ~/.ssh/test-ext-suppliers
-    #     mkdir -p ~/.ssh
-    #     chmod 700 ~/.ssh
-
-    #     cat <<EOF > ~/.ssh/config
-    #     Host github.com-repo-0
-    #             Hostname github.com
-    #             IdentityFile=~/.ssh/test-ext-suppliers
-    #     EOF
-
-    #     git clone git@github.com-repo-0:amoravek/test-vendor-repo.git
-
     - name: Process manifests
       shell: bash
       run: |
