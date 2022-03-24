@@ -29,6 +29,10 @@ inputs:
     description: Artifactory target repository
     type: string
     required: true
+  vendor-metadata-file:
+    description: Vendor metadata file
+    type: string
+    required: true
 
 runs:
   using: "composite"
@@ -61,7 +65,10 @@ runs:
         ls -la
         tree action
         tree vendor
+
         action/scripts/process-downloads.sh \
+        vendor/artifacts.yaml \
+        ${{ inputs.vendor-metadata-file }} \
         ${{ inputs.artifactory-user }} \
         ${{ inputs.artifactory-password }} \
         ${{ inputs.artifactory-base-url }} \
