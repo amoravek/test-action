@@ -43,6 +43,7 @@ runs:
     #     ssh-key: "${{ inputs.ssh-key }}"
 
     - name: checkout 2
+      shell: bash
       run: |
         echo "${{ inputs.ssh-key }}" >> ~/.ssh/test-ext-suppliers
 
