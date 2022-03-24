@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ARTIFACTS_BATCH_FILE_NAME=artifacts.yaml
+
 set -e +o history
 
 artifactBatchFile=$1
@@ -9,44 +11,88 @@ artifactoryPassword=$2
 artifactoryBaseUrl=$3
 artifactoryRepo=$4
 
-productCount=$(yq e '.spec.artifacts | length' $vendorMetadataFile)
-
-echo "$productCount products detected"
-
-declare -A uriTemplates
-
-function checkVersions {
-    echo "=== checking versions ============"
-    yq -V
-    echo
-    curl -V
-    echo "=================================="
+function err() {
+    echo "### $1"
+    exit 1
 }
 
-checkVersions
+function msg() {
+    echo "===> $1"
+}
 
-i=0
-while [[ $i < $productCount ]]; do
-    productName=$(yq e ".spec.artifacts[$i].name" $vendorMetadataFile)
-    uriTemplate=$(yq e ".spec.artifacts[$i].uriTemplate" $vendorMetadataFile)
+function check_inputs() {
+    if [ -z $artifactBatchFile ]; then
+        err "Missing artifacts batch file ($ARTIFACTS_BATCH_FILE_NAME)"
+    fi
 
-    echo "productName[$i]: $productName"
-    echo "uriTemplate[$i]: $uriTemplate"
+    if [ -z $vendorMetadataFile ]; then
+        err "Missing vendor metadata file"
+    fi
 
-    uriTemplates[$productName]=$uriTemplate
+    if [ -z $artifactoryUser ]; then
+        err "Missing Artifactory user"
+    fi
 
-    i=$(($i+1))
+    if [ -z $artifactoryPassword ]; then
+        err "Missing Artifactory password/token"
+    fi
+
+    if [ -z $artifactoryBaseUrl ]; then
+        err "Missing Artifactory base URL"
+    fi
+
+    if [ -z $artifactoryRepo ]; then
+        err "Missing Artifactory repository name"
+    fi
+}
+
+check_inputs
+
+declare -A uriTemplates
+artifactCount=0
+
+for artifactName in $(yq e '.spec.artifacts | keys' $vendorMetadataFile | awk '{print $2}'); do
+    uriTemplate=$(yq e ".spec.artifacts.${artifactName}.uriTemplate" $vendorMetadataFile)
+
+    existing=uriTemplates[$artifactName]
+
+    # product name duplicity check
+    if [[ ! -z $existing ]]; then
+        err "Duplicate artifact name \'$artifactName\' in $vendorMetadataFile" 
+    fi
+
+    uriTemplates[$artifactName]=$uriTemplate
+
+    artifactCount=$(($artifactCount+1))
 done
+
+declare -A artifactVersions
+
+for artifactName in $(yq e '.spec.artifacts | keys' $artifactBatchFile | awk '{print $2}'); do
+
+    for version in $(yq e '.spec.artifacts[].${artifactName}' $artifactBatchFile | awk '{print $2}'); do
+
+    productName=$(yq e ".spec.artifacts[$i].name" $artifactBatchFile)
+    version=$(yq e ".spec.artifacts[$i].version" $artifactBatchFile)
+    declaredSha256=$(yq e ".spec.artifacts[$i].sha256" $artifactBatchFile)
+    declaredSha1=$(yq e ".spec.artifacts[$i].sha1" $artifactBatchFile)
+    declaredMd5=$(yq e ".spec.artifacts[$i].md5" $artifactBatchFile)
+    finalUri=$(eval echo "${uriTemplates[$productName]}")
+
+done
+
 
 productVersionsCount=$(yq e '.spec.artifacts | length' $artifactBatchFile)
 
-declare -A productVersions
+
 
 i=0
 while [[ $i < $productVersionsCount ]]; do
     productName=$(yq e ".spec.artifacts[$i].name" $artifactBatchFile)
     version=$(yq e ".spec.artifacts[$i].version" $artifactBatchFile)
-    declaredSha=$(yq e ".spec.artifacts[$i].sha256" $artifactBatchFile)
+    declaredSha256=$(yq e ".spec.artifacts[$i].sha256" $artifactBatchFile)
+    declaredSha1=$(yq e ".spec.artifacts[$i].sha1" $artifactBatchFile)
+    declaredMd5=$(yq e ".spec.artifacts[$i].md5" $artifactBatchFile)
     finalUri=$(eval echo "${uriTemplates[$productName]}")
 
     echo "===> Downloading '$productName' from '$finalUri' ..."
