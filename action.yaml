@@ -54,8 +54,6 @@ runs:
         ref: v1
         path: action
 
-    
-
     - name: Process manifests
       shell: bash
       run: |
@@ -63,7 +61,7 @@ runs:
         ls -la
         tree action
         tree vendor
-        scripts/process-downloads.sh \
+        action/scripts/process-downloads.sh \
         ${{ inputs.artifactory-user }} \
         ${{ inputs.artifactory-password }} \
         ${{ inputs.artifactory-base-url }} \
