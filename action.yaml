@@ -54,6 +54,7 @@ runs:
       run: |
         ls -la
         tree
+        pwd
         scripts/process-downloads.sh \
         ${{ inputs.artifactory-user }} \
         ${{ inputs.artifactory-password }} \
