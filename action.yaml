@@ -46,6 +46,8 @@ runs:
       shell: bash
       run: |
         echo "${{ inputs.ssh-key }}" >> ~/.ssh/test-ext-suppliers
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
 
         cat <<EOF > ~/.ssh/config
         Host github.com-repo-0
