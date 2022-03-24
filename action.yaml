@@ -41,10 +41,13 @@ runs:
         repository: "${{ inputs.repository }}"
         ref: "${{ inputs.ref }}"
         ssh-key: "${{ inputs.ssh-key }}"
+        path: vendor
 
     - shell: bash
       run: |
-        cat artifacts.yaml
+        cat vendor/artifacts.yaml
+
+    - uses: actions/checkout@v3
 
     - name: Process manifests
       shell: bash
