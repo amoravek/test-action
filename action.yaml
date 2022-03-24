@@ -42,6 +42,8 @@ runs:
         ref: "${{ inputs.ref }}"
         ssh-key: "${{ inputs.ssh-key }}"
 
+    - run: cat artifacts.yaml
+
     - name: Process manifests
       shell: bash
       run: |
