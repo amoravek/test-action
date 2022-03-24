@@ -34,8 +34,6 @@ runs:
   using: "composite"
 
   steps:
-    - name: Checkout action repository
-      uses: actions/checkout@v3
 
     - name: Checkout vendor repository
       uses: actions/checkout@v3
@@ -49,12 +47,22 @@ runs:
       run: |
         cat vendor/artifacts.yaml
 
+    - name: Checkout actions repository
+      uses: actions/checkout@v3
+      with:
+        repository: amoravek/test-action
+        ref: v1
+        path: action
+
+    
+
     - name: Process manifests
       shell: bash
       run: |
-        ls -la
-        tree
         pwd
+        ls -la
+        tree action
+        tree vendor
         scripts/process-downloads.sh \
         ${{ inputs.artifactory-user }} \
         ${{ inputs.artifactory-password }} \
