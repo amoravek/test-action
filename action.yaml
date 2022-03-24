@@ -52,6 +52,8 @@ runs:
     - name: Process manifests
       shell: bash
       run: |
+        ls -la
+        tree
         scripts/process-downloads.sh \
         ${{ inputs.artifactory-user }} \
         ${{ inputs.artifactory-password }} \
