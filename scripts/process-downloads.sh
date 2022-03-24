@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x -e +o history
+set -e +o history
 
 artifactBatchFile=$1
 vendorMetadataFile=$2
