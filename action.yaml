@@ -34,12 +34,25 @@ runs:
   using: "composite"
 
   steps:
-    - name: Checkout vendor repository
-      uses: actions/checkout@v3
-      with:
-        repository: "${{ inputs.repository }}"
-        ref: "${{ inputs.ref }}"
-        ssh-key: "${{ inputs.ssh-key }}"
+
+    # - name: Checkout vendor repository
+    #   uses: actions/checkout@v3
+    #   with:
+    #     repository: "${{ inputs.repository }}"
+    #     ref: "${{ inputs.ref }}"
+    #     ssh-key: "${{ inputs.ssh-key }}"
+
+    - name: checkout 2
+      run: |
+        echo "${{ inputs.ssh-key }}" >> ~/.ssh/test-ext-suppliers
+
+        cat <<EOF > ~/.ssh/config
+        Host github.com-repo-0
+                Hostname github.com
+                IdentityFile=~/.ssh/test-ext-suppliers
+        EOF
+
+        git clone git@github.com-repo-0:amoravek/test-vendor-repo.git
 
     - name: Process manifests
       shell: bash
