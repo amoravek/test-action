@@ -46,6 +46,10 @@ runs:
         ssh-key: "${{ inputs.ssh-key }}"
         path: vendor
 
+    - shell: bash
+      run: |
+        cat vendor/artifacts.yaml
+
     - name: Checkout actions repository
       uses: actions/checkout@v3
       with:
@@ -58,6 +62,7 @@ runs:
       run: |
         tree action
         tree vendor
+
         action/scripts/process-downloads.sh \
         vendor/artifacts.yaml \
         ${{ inputs.vendor-metadata-file }} \
