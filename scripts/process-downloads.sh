@@ -105,6 +105,8 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
 
         info "===> Downloading $ARTIFACT_NAME $VERSION from $FINAL_URI ..."
 
+        git tag ${ARTIFACT_NAME}_${VERSION}
+
         i=$(($i+1))
     done
 done
