@@ -93,7 +93,7 @@ declare -A ARTIFACT_VERSIONS
 for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk '{print $2}'); do
 
     if [[ "x${URI_TEMPLATES[$ARTIFACT_NAME]}" == "x" ]]; then
-        die "Missing URI pattern for artifact $ARTIFACT_NAME"
+        die "Missing URI pattern for artifact $ARTIFACT_NAME XXX"
     fi
 
     VERSIONS_COUNT=$(yq e ".spec.artifacts.${ARTIFACT_NAME} | length" $ARTIFACTS_BATCH_FILE)
@@ -121,13 +121,13 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
         info "===> Downloading $ARTIFACT_NAME $VERSION from $FINAL_URI ..."
 
         info "Creating tag ${ARTIFACT_NAME}_${VERSION}"
-        git tag ${ARTIFACT_NAME}_${VERSION}
+        # git tag ${ARTIFACT_NAME}_${VERSION}
 
         i=$(($i+1))
     done
 
     info "Pushing tags"
-    git push --tags
+    # git push --tags
 done
 
 # i=0
