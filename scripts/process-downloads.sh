@@ -56,6 +56,14 @@ function check_inputs() {
     if [ -z $ARTIFACTORY_REPO ]; then
         die "Missing Artifactory repository name"
     fi
+
+    if [[ ! -f "$ARTIFACTS_BATCH_FILE" ]]; then
+        die "File $ARTIFACTS_BATCH_FILE_NAME not found"
+    fi
+
+    if [[ ! -f "$VENDOR_METADATA_FILE" ]]; then
+        die "File $VENDOR_METADATA_FILE not found"
+    fi
 }
 
 check_inputs
