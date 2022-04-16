@@ -8,6 +8,8 @@ ARTIFACTORY_USER=$3
 ARTIFACTORY_PASSWORD=$4
 ARTIFACTORY_BASE_URL=$5
 ARTIFACTORY_REPO=$6
+DOWNLOAD_USER=$7
+DOWNLOAD_PASSWORD=$8
 
 SCRIPT_FILE="$0"
 
@@ -174,6 +176,8 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 debug "TARGET_FILE_NAME: $TARGET_FILE_NAME"
                 debug "TARGET_FILE_BASE: $TARGET_FILE_BASE"
                 debug "TARGET_FILE_EXT: $TARGET_FILE_EXT"
+
+                xxx
 
                 # curl --silent --show-error --fail --remote-name --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
                 curl --silent --show-error --fail --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null

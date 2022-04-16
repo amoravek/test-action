@@ -68,4 +68,6 @@ runs:
         ${{ inputs.artifactory-user }} \
         ${{ inputs.artifactory-password }} \
         ${{ inputs.artifactory-base-url }} \
-        ${{ inputs.artifactory-repo }}
+        ${{ inputs.artifactory-repo }} \
+        ${{ inputs.download-user }} \
+        ${{ inputs.download-password }}
