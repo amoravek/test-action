@@ -217,19 +217,18 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 CHECKSUM_HEADERS="$CHECKSUM_HEADERS --header X-Checksum-Sha256:${DECLARED_SHA256}"
             fi
 
-            # base=$(basename -- "$TARGET_FILE_NAME")
-            # ext="${base#*.}"
-            # name="${base%%.*}"
+            UPLOAD_FILE_NAME="${TARGET_FILE_BASE}-${VERSION}.${TARGET_FILE_EXT}"
+            TARGET_URL="${ARTIFACTORY_BASE_URL}/${ARTIFACTORY_REPO}/${UPLOAD_FILE_NAME}"
 
-            # if [[ "$name" == "$ext" ]]; then
-            #     targetTARGET_FILE_NAME=$name-$version
-            # else
-            #     targetTARGET_FILE_NAME=$name-$version.$ext
-            # fi
+            info "Uploading to $TARGET_URL ... "
+            curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$targetUrl" --upload-file ${TARGET_FILE_NAME} > /dev/null
 
-            # targetUrl="${ARTIFACTORY_BASE_URL}/${ARTIFACTORY_REPO}/${targetTARGET_FILE_NAME}"
-            # info "Uploading to $targetUrl ... "
-            # curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$targetUrl" --upload-file ${TARGET_FILE_NAME} > /dev/null
+            if [ ! $? -eq 0 ]; then
+                warning "Error uploading $ARTIFACT_NAME ($UPLOAD_FILE_NAME)"
+                break
+            else
+                info "File $UPLOAD_FILE_NAME successfully uploaded"
+            fi
 
             info "Creating tag ${ARTIFACT_NAME}_${VERSION}"
             git tag ${ARTIFACT_NAME}_${VERSION}
