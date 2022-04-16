@@ -154,9 +154,22 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 break
             fi
 
-            info "===> Downloading $ARTIFACT_NAME $VERSION from $FINAL_URI ..."
+            info "Downloading $ARTIFACT_NAME $VERSION from $FINAL_URI ..."
 
             CHECKSUM_HEADERS=""
+
+            URI_LOWERCASE=${a,,}
+
+            debug "URI_LOWERCASE: $URI_LOWERCASE"
+
+            if [[ "$URI_LOWERCASE" == "http"* ]]; then # http download
+
+            elif [[ "$URI_LOWERCASE" == "scp"* ]]; then # scp download
+
+            else
+                warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
+                break
+            fi
 
             TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $FINAL_URI | sed -r '/filename=/!d;s/.*filename=(.*)$/\1/' | tr -d '\r')
 
@@ -165,7 +178,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
             curl --silent --show-error --fail --remote-name --insecure --location $FINAL_URI > /dev/null
 
             if [ ! $? -eq 0 ]; then
-                warning "### Error downloading '$productName' ($TARGET_FILE_NAME)"
+                warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
                 break
             else
                 info "File $TARGET_FILE_NAME successfully downloaded"
