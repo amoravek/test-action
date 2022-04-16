@@ -125,6 +125,8 @@ cd $(dirname $VENDOR_METADATA_FILE})
 GIT_TAGS=$(git tag --list)
 cd $DIR
 
+info "Existing tags: $GIT_TAGS"
+
 declare -A ARTIFACT_VERSIONS
 
 for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk '{print $2}'); do
