@@ -93,7 +93,7 @@ declare -A ARTIFACT_VERSIONS
 for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk '{print $2}'); do
 
     if [[ "x${URI_TEMPLATES[$ARTIFACT_NAME]}" == "x" ]]; then
-        die "Missing URI pattern for artifact $ARTIFACT_NAME XXX"
+        die "Missing URI pattern for artifact $ARTIFACT_NAME"
     fi
 
     VERSIONS_COUNT=$(yq e ".spec.artifacts.${ARTIFACT_NAME} | length" $ARTIFACTS_BATCH_FILE)
@@ -105,6 +105,8 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
         DECLARED_SHA1=$(yq e ".spec.artifacts.${ARTIFACT_NAME}[$i].sha1" $ARTIFACTS_BATCH_FILE)
         DECLARED_MD5=$(yq e ".spec.artifacts.${ARTIFACT_NAME}[$i].md5" $ARTIFACTS_BATCH_FILE)
         FINAL_URI=$(eval echo "${URI_TEMPLATES[$ARTIFACT_NAME]}")
+
+        echo "XXX ${URI_TEMPLATES[$ARTIFACT_NAME]}"
 
         echo "VERSION: $VERSION"
         echo "DECLARED_SHA256: $DECLARED_SHA256"
