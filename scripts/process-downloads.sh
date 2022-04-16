@@ -185,7 +185,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 fi
 
                 # curl --silent --show-error --fail --remote-name --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
-                curl $AUTH --silent --show-error --fail --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
+                curl $AUTH --silent --show-error --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
 
                 if [ ! $? -eq 0 ]; then
                     warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
@@ -221,7 +221,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
             TARGET_URL="${ARTIFACTORY_BASE_URL}/${ARTIFACTORY_REPO}/${UPLOAD_FILE_NAME}"
 
             info "Uploading to $TARGET_URL ... "
-            curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$TARGET_URL" --upload-file ${TARGET_FILE_NAME} > /dev/null
+            curl --silent --show-error --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$TARGET_URL" --upload-file ${TARGET_FILE_NAME} > /dev/null
 
             if [ ! $? -eq 0 ]; then
                 warning "Error uploading $ARTIFACT_NAME ($UPLOAD_FILE_NAME)"
