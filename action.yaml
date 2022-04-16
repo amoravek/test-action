@@ -4,35 +4,34 @@ description: "Extracts and processes vendor manifests"
 inputs:
   repository:
     description: Repository containing vendor manifest(s)
-    # type: string
     required: true
   ref:
     description: Repository ref (branch, tag, commit)
-    # type: string
     required: false
   ssh-key:
     description: SSH private key (deploy key) for accessing the vendor repository
     required: false
   artifactory-base-url:
     description: Target Artifactory repository URL
-    # type: string
     required: true
   artifactory-user:
     description: Artifactory user
-    # type: string
     required: false
   artifactory-password:
     description: Artifactory user password
-    # type: string
     required: false
   artifactory-repo:
     description: Artifactory target repository
-    # type: string
     required: true
   vendor-metadata-file:
     description: Vendor metadata file
-    # type: string
     required: true
+  download-user:
+    description: Username authenticated against the system the files are downloaded from
+    required: false
+  download-password:
+    description: Password for that user
+    required: false
 
 runs:
   using: "composite"

@@ -164,9 +164,6 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
 
             if [[ "$URI_LOWERCASE" == "http"* ]]; then # http download
                 TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $FINAL_URI | sed -r '/filename=/!d;s/.*filename=(.*)$/\1/' | tr -d '\r')
-                # TARGET_FILE_NAME=${TARGET_FILE_NAME}_$VERSION
-
-                # TARGET_FILE_BASE=$(basename -- "$TARGET_FILE_NAME")
                 TARGET_FILE_EXT="${TARGET_FILE_NAME#*.}"
                 TARGET_FILE_BASE="${TARGET_FILE_NAME%%.*}"
 
