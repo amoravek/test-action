@@ -230,7 +230,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
             # curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$targetUrl" --upload-file ${TARGET_FILE_NAME} > /dev/null
 
             info "Creating tag ${ARTIFACT_NAME}_${VERSION}"
-            # git tag ${ARTIFACT_NAME}_${VERSION}
+            git tag ${ARTIFACT_NAME}_${VERSION}
 
             break
         done
@@ -239,8 +239,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
     done
 
     info "Pushing tags ($ARTIFACT_NAME)"
-    # git push --tags
-
+    git push --tags
 done
 
 info "Success"
