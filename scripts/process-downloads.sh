@@ -234,8 +234,9 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
         i=$(($i+1))
     done
 
-    info "Pushing tags"
+    info "Pushing tags ($ARTIFACT_NAME)"
     # git push --tags
 
-    info "Success"
 done
+
+info "Success"
