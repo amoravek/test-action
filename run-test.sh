@@ -6,4 +6,6 @@ vendor-metadata.yaml \
 artifactory-user \
 artifactory-password \
 http://artifactory-base-url \
-artifactory-repo
+artifactory-repo \
+duser \
+dpasswd

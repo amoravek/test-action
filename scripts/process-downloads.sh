@@ -177,10 +177,13 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 debug "TARGET_FILE_BASE: $TARGET_FILE_BASE"
                 debug "TARGET_FILE_EXT: $TARGET_FILE_EXT"
 
-                xxx
+                if [[ ! -z "$DOWNLOAD_USER" ]]; then
+                    info "Using authentication - user: $DOWNLOAD_USER"
+                    AUTH="--user $DOWNLOAD_USER:$DOWNLOAD_PASSWORD"
+                fi
 
                 # curl --silent --show-error --fail --remote-name --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
-                curl --silent --show-error --fail --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
+                curl $AUTH --silent --show-error --fail --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
 
                 if [ ! $? -eq 0 ]; then
                     warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
