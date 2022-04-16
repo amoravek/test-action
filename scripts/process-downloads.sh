@@ -158,30 +158,40 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
 
             CHECKSUM_HEADERS=""
 
-            URI_LOWERCASE=${a,,}
+            URI_LOWERCASE=${FINAL_URI,,}
 
             debug "URI_LOWERCASE: $URI_LOWERCASE"
 
             if [[ "$URI_LOWERCASE" == "http"* ]]; then # http download
+                TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $FINAL_URI | sed -r '/filename=/!d;s/.*filename=(.*)$/\1/' | tr -d '\r')
+                # TARGET_FILE_NAME=${TARGET_FILE_NAME}_$VERSION
 
+                # TARGET_FILE_BASE=$(basename -- "$TARGET_FILE_NAME")
+                TARGET_FILE_EXT="${TARGET_FILE_NAME#*.}"
+                TARGET_FILE_BASE="${TARGET_FILE_NAME%%.*}"
+
+                if [[ "$TARGET_FILE_EXT" == "$TARGET_FILE_BASE" ]]; then
+                    TARGET_FILE_EXT=""
+                fi
+
+                debug "TARGET_FILE_NAME: $TARGET_FILE_NAME"
+                debug "TARGET_FILE_BASE: $TARGET_FILE_BASE"
+                debug "TARGET_FILE_EXT: $TARGET_FILE_EXT"
+
+                # curl --silent --show-error --fail --remote-name --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
+                curl --silent --show-error --fail --insecure --location $FINAL_URI --output $TARGET_FILE_NAME > /dev/null
+
+                if [ ! $? -eq 0 ]; then
+                    warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
+                    break
+                else
+                    info "File $TARGET_FILE_NAME successfully downloaded"
+                fi
             elif [[ "$URI_LOWERCASE" == "scp"* ]]; then # scp download
-
+                echo "scp"
             else
                 warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
                 break
-            fi
-
-            TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $FINAL_URI | sed -r '/filename=/!d;s/.*filename=(.*)$/\1/' | tr -d '\r')
-
-            debug "TARGET_FILE_NAME: $TARGET_FILE_NAME"
-
-            curl --silent --show-error --fail --remote-name --insecure --location $FINAL_URI > /dev/null
-
-            if [ ! $? -eq 0 ]; then
-                warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
-                break
-            else
-                info "File $TARGET_FILE_NAME successfully downloaded"
             fi
 
             CHECKSUM_HEADERS=""
