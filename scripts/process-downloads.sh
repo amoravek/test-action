@@ -69,7 +69,6 @@ function check_inputs() {
 function verify_checksum() {
     FILE=$1
     CHECKSUM=$2
-    CHECKSUM_LENGTH=${#$CHECKSUM}
 
     if [[ -z $FILE ]]; then
         warning "No file given to verify checksum"
@@ -80,6 +79,8 @@ function verify_checksum() {
         warning "No checksum given"
         return
     fi
+
+    CHECKSUM_LENGTH=${#CHECKSUM}
     
     if [[ $CHECKSUM_LENGTH == "32" ]]; then # md5
         CALCULATED_CHECKSUM=$(md5sum "$TARGET_FILE_NAME" | cut -d " " -f 1)
@@ -93,7 +94,7 @@ function verify_checksum() {
     fi
 
     if [[ "$CHECKSUM" != "$CALCULATED_CHECKSUM" ]]; then
-        error "Checksum validation failed for fire $TARGET_FILE_NAME! declared: [$CHECKSUM] vs. calculated: [$CALCULATED_CHECKSUM]"
+        error "Checksum validation failed for file $TARGET_FILE_NAME! declared: [$CHECKSUM] vs. calculated: [$CALCULATED_CHECKSUM]"
         exit 1
     else
         info "Checksum validation successfull"
@@ -157,7 +158,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
 
             CHECKSUM_HEADERS=""
 
-            TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $FINAL_URI | sed -r '/TARGET_FILE_NAME=/!d;s/.*TARGET_FILE_NAME=(.*)$/\1/' | tr -d '\r')
+            TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $FINAL_URI | sed -r '/filename=/!d;s/.*filename=(.*)$/\1/' | tr -d '\r')
 
             debug "TARGET_FILE_NAME: $TARGET_FILE_NAME"
 
@@ -173,21 +174,33 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
             CHECKSUM_HEADERS=""
 
             if [[ $DECLARED_MD5 != "null" ]]; then
-                verifyChecksum $TARGET_FILE_NAME $DECLARED_MD5
+                verify_checksum $TARGET_FILE_NAME $DECLARED_MD5
                 CHECKSUM_HEADERS="$CHECKSUM_HEADERS --header X-Checksum:$DECLARED_MD5"
             fi
 
             if [[ $DECLARED_SHA1 != "null" ]]; then
-                verifyChecksum $TARGET_FILE_NAME $DECLARED_SHA1
+                verify_checksum $TARGET_FILE_NAME $DECLARED_SHA1
                 CHECKSUM_HEADERS="$CHECKSUM_HEADERS --header X-Checksum-Sha1:${DECLARED_SHA1}"
             fi
 
             if [[ $DECLARED_SHA256 != "null" ]]; then
-                verifyChecksum $TARGET_FILE_NAME $DECLARED_SHA256
+                verify_checksum $TARGET_FILE_NAME $DECLARED_SHA256
                 CHECKSUM_HEADERS="$CHECKSUM_HEADERS --header X-Checksum-Sha256:${DECLARED_SHA256}"
             fi
 
+            # base=$(basename -- "$TARGET_FILE_NAME")
+            # ext="${base#*.}"
+            # name="${base%%.*}"
 
+            # if [[ "$name" == "$ext" ]]; then
+            #     targetTARGET_FILE_NAME=$name-$version
+            # else
+            #     targetTARGET_FILE_NAME=$name-$version.$ext
+            # fi
+
+            # targetUrl="${ARTIFACTORY_BASE_URL}/${ARTIFACTORY_REPO}/${targetTARGET_FILE_NAME}"
+            # info "Uploading to $targetUrl ... "
+            # curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$targetUrl" --upload-file ${TARGET_FILE_NAME} > /dev/null
 
             info "Creating tag ${ARTIFACT_NAME}_${VERSION}"
             # git tag ${ARTIFACT_NAME}_${VERSION}
@@ -200,23 +213,6 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
 
     info "Pushing tags"
     # git push --tags
+
+    info "Success"
 done
-
-
-#     base=$(basename -- "$TARGET_FILE_NAME")
-#     ext="${base#*.}"
-#     name="${base%%.*}"
-
-#     if [[ "$name" == "$ext" ]]; then
-#         targetTARGET_FILE_NAME=$name-$version
-#     else
-#         targetTARGET_FILE_NAME=$name-$version.$ext
-#     fi
-
-#     targetUrl="${ARTIFACTORY_BASE_URL}/${ARTIFACTORY_REPO}/${targetTARGET_FILE_NAME}"
-#     info "Uploading to $targetUrl ... "
-#     curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$targetUrl" --upload-file ${TARGET_FILE_NAME} > /dev/null
-
-#     i=$(($i+1))
-# done
-
