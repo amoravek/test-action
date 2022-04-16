@@ -106,13 +106,11 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
         DECLARED_MD5=$(yq e ".spec.artifacts.${ARTIFACT_NAME}[$i].md5" $ARTIFACTS_BATCH_FILE)
         FINAL_URI=$(eval echo "${URI_TEMPLATES[$ARTIFACT_NAME]}")
 
-        echo "XXX ${URI_TEMPLATES[$ARTIFACT_NAME]}"
-
-        echo "VERSION: $VERSION"
-        echo "DECLARED_SHA256: $DECLARED_SHA256"
-        echo "DECLARED_SHA1: $DECLARED_SHA1"
-        echo "DECLARED_MD5: $DECLARED_MD5"
-        echo "FINAL_URI: $FINAL_URI"
+        debug "VERSION: $VERSION"
+        debug "DECLARED_SHA256: $DECLARED_SHA256"
+        debug "DECLARED_SHA1: $DECLARED_SHA1"
+        debug "DECLARED_MD5: $DECLARED_MD5"
+        debug "FINAL_URI: $FINAL_URI"
 
         if [[ $GIT_TAGS == *"${ARTIFACT_NAME}_${VERSION}"* ]]; then
             info "Artifact $ARTIFACT_NAME $VERSION already processed; skipping"
