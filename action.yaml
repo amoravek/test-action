@@ -45,7 +45,8 @@ runs:
         ssh-key: "${{ inputs.ssh-key }}"
         path: vendor
 
-    - shell: bash
+    - name: Show verdor manifest
+      shell: bash
       run: |
         cat vendor/artifacts.yaml
 
