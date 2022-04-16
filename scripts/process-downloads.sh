@@ -96,7 +96,7 @@ function verify_checksum() {
     fi
 
     if [[ "$CHECKSUM" != "$CALCULATED_CHECKSUM" ]]; then
-        error "Checksum validation failed for file $TARGET_FILE_NAME! declared: [$CHECKSUM] vs. calculated: [$CALCULATED_CHECKSUM]"
+        error "Checksum validation failed for file $TARGET_FILE_NAME! declared: $CHECKSUM vs. calculated: $CALCULATED_CHECKSUM"
         exit 1
     else
         info "Checksum validation successfull"
@@ -178,7 +178,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 debug "TARGET_FILE_EXT: $TARGET_FILE_EXT"
 
                 if [[ ! -z "$DOWNLOAD_USER" ]]; then
-                    info "Using authentication - user: $DOWNLOAD_USER"
+                    info "Using authentication ($DOWNLOAD_USER)"
                     AUTH="--user $DOWNLOAD_USER:$DOWNLOAD_PASSWORD"
                 fi
 
