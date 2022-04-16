@@ -112,16 +112,51 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
         debug "DECLARED_MD5: $DECLARED_MD5"
         debug "FINAL_URI: $FINAL_URI"
 
-        if [[ $GIT_TAGS == *"${ARTIFACT_NAME}_${VERSION}"* ]]; then
-            info "Artifact $ARTIFACT_NAME $VERSION already processed; skipping"
-            i=$(($i+1))
-            continue
-        fi
+        while : ; do
 
-        info "===> Downloading $ARTIFACT_NAME $VERSION from $FINAL_URI ..."
+            if [[ $GIT_TAGS == *"${ARTIFACT_NAME}_${VERSION}"* ]]; then
+                info "Artifact $ARTIFACT_NAME $VERSION already processed; skipping"
+                break
+            fi
 
-        info "Creating tag ${ARTIFACT_NAME}_${VERSION}"
-        # git tag ${ARTIFACT_NAME}_${VERSION}
+            info "===> Downloading $ARTIFACT_NAME $VERSION from $FINAL_URI ..."
+
+            CHECKSUM_HEADERS=""
+
+            TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $FINAL_URI | sed -r '/TARGET_FILE_NAME=/!d;s/.*TARGET_FILE_NAME=(.*)$/\1/' | tr -d '\r')
+
+            debug "TARGET_FILE_NAME: $TARGET_FILE_NAME"
+
+            curl --silent --show-error --fail --remote-name --insecure --location $FINAL_URI > /dev/null
+
+            if [ ! $? -eq 0 ]; then
+                warning "### Error downloading '$productName' ($TARGET_FILE_NAME)"
+                break
+            else
+                info "File $TARGET_FILE_NAME successfully downloaded"
+            fi
+
+            if [[ $declaredSha != "null" ]]; then
+                echo -n "Verifying checksum ... "
+                sha256Sum=$(sha256sum "$TARGET_FILE_NAME" | cut -d " " -f 1)
+                sha1Sum=$(sha1sum "$TARGET_FILE_NAME" | cut -d " " -f 1)
+                md5Sum=$(md5sum "$TARGET_FILE_NAME" | cut -d " " -f 1)
+
+                if [[ "$declaredSha" != "$sha256Sum" ]]; then
+                    warning "### Invalid checksum - $productName:$version ($TARGET_FILE_NAME): declared: [$declaredSha] real: [$sha]"
+                    break
+                else
+                    echo "OK"
+                    CHECKSUM_HEADERS="--header X-Checksum-Sha256:${sha256Sum} --header X-Checksum-Sha1:${sha1Sum} --header X-Checksum:${md5Sum}"
+                    # CHECKSUM_HEADERS="--header X-Checksum-Sha256:${declaredSha}"
+                fi
+            else
+                info "No checksum provided to verify"
+            fi
+
+            info "Creating tag ${ARTIFACT_NAME}_${VERSION}"
+            # git tag ${ARTIFACT_NAME}_${VERSION}
+        done
 
         i=$(($i+1))
     done
@@ -141,47 +176,47 @@ done
 
 #     info "===> Downloading '$productName' from '$finalUri' ..."
 
-#     checksumHeaders=""
+#     CHECKSUM_HEADERS=""
 
-#     fileName=$(curl --silent --show-error --fail --head --insecure --location $finalUri | sed -r '/filename=/!d;s/.*filename=(.*)$/\1/' | tr -d '\r')
+#     TARGET_FILE_NAME=$(curl --silent --show-error --fail --head --insecure --location $finalUri | sed -r '/TARGET_FILE_NAME=/!d;s/.*TARGET_FILE_NAME=(.*)$/\1/' | tr -d '\r')
 #     curl --silent --show-error --fail --remote-name --insecure --location $finalUri > /dev/null
 
 #     if [ ! $? -eq 0 ]; then
-#         warning "### Error downloading '$productName' ($fileName)"
+#         warning "### Error downloading '$productName' ($TARGET_FILE_NAME)"
 #         continue
 #     fi
 
 #     if [[ $declaredSha != "null" ]]; then
 #         echo -n "Verifying checksum ... "
-#         sha256Sum=$(sha256sum "$fileName" | cut -d " " -f 1)
-#         sha1Sum=$(sha1sum "$fileName" | cut -d " " -f 1)
-#         md5Sum=$(md5sum "$fileName" | cut -d " " -f 1)
+#         sha256Sum=$(sha256sum "$TARGET_FILE_NAME" | cut -d " " -f 1)
+#         sha1Sum=$(sha1sum "$TARGET_FILE_NAME" | cut -d " " -f 1)
+#         md5Sum=$(md5sum "$TARGET_FILE_NAME" | cut -d " " -f 1)
 
 #         if [[ "$declaredSha" != "$sha256Sum" ]]; then
-#             warning "### Invalid checksum - $productName:$version ($fileName): declared: [$declaredSha] real: [$sha]"
+#             warning "### Invalid checksum - $productName:$version ($TARGET_FILE_NAME): declared: [$declaredSha] real: [$sha]"
 #             continue
 #         else
 #             echo "OK"
-#             checksumHeaders="--header X-Checksum-Sha256:${sha256Sum} --header X-Checksum-Sha1:${sha1Sum} --header X-Checksum:${md5Sum}"
-#             # checksumHeaders="--header X-Checksum-Sha256:${declaredSha}"
+#             CHECKSUM_HEADERS="--header X-Checksum-Sha256:${sha256Sum} --header X-Checksum-Sha1:${sha1Sum} --header X-Checksum:${md5Sum}"
+#             # CHECKSUM_HEADERS="--header X-Checksum-Sha256:${declaredSha}"
 #         fi
 #     else
 #         info "No checksum provided to verify"
 #     fi
 
-#     base=$(basename -- "$fileName")
+#     base=$(basename -- "$TARGET_FILE_NAME")
 #     ext="${base#*.}"
 #     name="${base%%.*}"
 
 #     if [[ "$name" == "$ext" ]]; then
-#         targetFileName=$name-$version
+#         targetTARGET_FILE_NAME=$name-$version
 #     else
-#         targetFileName=$name-$version.$ext
+#         targetTARGET_FILE_NAME=$name-$version.$ext
 #     fi
 
-#     targetUrl="${ARTIFACTORY_BASE_URL}/${ARTIFACTORY_REPO}/${targetFileName}"
+#     targetUrl="${ARTIFACTORY_BASE_URL}/${ARTIFACTORY_REPO}/${targetTARGET_FILE_NAME}"
 #     info "Uploading to $targetUrl ... "
-#     curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${checksumHeaders} --request PUT "$targetUrl" --upload-file ${fileName} > /dev/null
+#     curl --silent --show-error --fail --insecure --user ${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD} ${CHECKSUM_HEADERS} --request PUT "$targetUrl" --upload-file ${TARGET_FILE_NAME} > /dev/null
 
 #     i=$(($i+1))
 # done
