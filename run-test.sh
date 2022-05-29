@@ -7,5 +7,5 @@ artifactory-user \
 artifactory-password \
 http://artifactory-base-url \
 artifactory-repo \
-duser \
+amoravek \
 dpasswd

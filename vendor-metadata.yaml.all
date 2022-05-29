@@ -1,0 +1,17 @@
+apiVersion: artifacts.csas.cz/v1
+kind: VendorMetadata
+metadata:
+  annotations:
+    annotations.here/any: test-annotation
+  labels:
+    labels.here/any: test-label
+spec:
+  artifacts:
+    # yq:
+    #   uriTemplate: https://github.com/mikefarah/yq/releases/download/v${VERSION}/yq_linux_amd64
+    # k9s:
+    #   uriTemplate: https://github.com/derailed/k9s/releases/download/v${VERSION}/k9s_Linux_x86_64.tar.gz
+    # scptest:
+    #   uriTemplate: scp://root@host:/path/to/file-${VERSION}.tar.gz
+    sftptest:
+      uriTemplate: sftp://reg.edgeclusters.com:temp/myfile-${VERSION}.txt

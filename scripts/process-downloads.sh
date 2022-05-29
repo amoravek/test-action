@@ -10,6 +10,7 @@ ARTIFACTORY_BASE_URL=$5
 ARTIFACTORY_REPO=$6
 DOWNLOAD_USER=$7
 DOWNLOAD_PASSWORD=$8
+IDENTITY_FILE_B64=$9
 
 SCRIPT_FILE="$0"
 
@@ -193,16 +194,43 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 else
                     info "File $TARGET_FILE_NAME successfully downloaded"
                 fi
-            elif [[ "$URI_LOWERCASE" == "scp"* ]]; then # scp download
-                echo "scp"
-            elif [[ "$URI_LOWERCASE" == "sftp"* ]]; then # sftp download
+            elif [[ "$URI_LOWERCASE" == "scp"* || "$URI_LOWERCASE" == "sftp"* ]]; then
+
+            echo "==========================================="
+
+                if [[ "$URI_LOWERCASE" == "sftp"* ]]; then
+                    echo "Downloading from SFTP server ..."
+                    TRANSFER_BASE_URL=${URI_LOWERCASE#"sftp://"}
+                else
+                    echo "Downloading from SCP server ..."
+                    TRANSFER_BASE_URL=${URI_LOWERCASE#"scp://"}
+                fi
+
+                debug "TRANSFER_BASE_URL: $TRANSFER_BASE_URL"
                 
-                echo "Downloading from SFTP server ..."
+                info "Downloading from $TRANSFER_BASE_URL"
 
-                SFTP_BASE_URL=${URI_LOWERCASE#"sftp://"}
-                echo "SFTP_BASE_URL: $SFTP_BASE_URL"
+                if [[ ! -z $DOWNLOAD_PASSWORD ]]; then
+                    TRANSFER_PASSWORD_HOLDER=":$DOWNLOAD_PASSWORD"
+                fi
 
+                COMMAND_BODY=$DOWNLOAD_USER$TRANSFER_PASSWORD_HOLDER@$TRANSFER_BASE_URL
 
+                if [[ ! -z $IDENTITY_FILE_B64 ]]; then
+                    TEMP_FILE_IDENTITY=$(tempfile)
+                    echo "$IDENTITY_FILE_B64" | base64 -d > $TEMP_FILE_IDENTITY
+                    IDENTITY_PARAM="-i $TEMP_FILE_IDENTITY"
+                fi
+
+                if [[ "$URI_LOWERCASE" == "sftp"* ]]; then
+                    sftp $IDENTITY_PARAM $COMMAND_BODY
+                else
+                    scp $IDENTITY_PARAM $COMMAND_BODY .
+                fi
+
+                cat myfile-3.2.1.txt
+
+                echo "==========================================="
 
             else
                 warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"

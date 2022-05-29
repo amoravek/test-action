@@ -32,6 +32,9 @@ inputs:
   download-password:
     description: Password for that user
     required: false
+  identity-file-b64:
+    description: Base64-encoded SSH identity file (valid for SCP/SFTP transfers)
+    required: false
 
 runs:
   using: "composite"
@@ -71,4 +74,5 @@ runs:
         ${{ inputs.artifactory-base-url }} \
         ${{ inputs.artifactory-repo }} \
         ${{ inputs.download-user }} \
-        ${{ inputs.download-password }}
+        '${{ inputs.download-password }}' \
+        '${{ inputs.identity-file-b64 }}'
