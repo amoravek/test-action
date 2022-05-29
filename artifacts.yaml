@@ -7,10 +7,9 @@ metadata:
     labels.here/any: optional-label
 spec:
   artifacts:
-    yq:
-      - version: 4.14.1
-        sha256: 28e9623452c5da978ec3630c64d838a94f7a6bdd219da0db6f6cb042b5e06d07
-        
+    # yq:
+    #   - version: 4.14.1
+    #     sha256: 28e9623452c5da978ec3630c64d838a94f7a6bdd219da0db6f6cb042b5e06d07
     #   - version: 4.13.4
     #   - version: 4.13.5
     #     sha1: ec167a6e38d86b3fc1d6001d0c18d40071a2a858
@@ -22,3 +21,5 @@ spec:
     #   - version: 0.24.13
     # scptest:
     #   - version: 1.2.3
+    sftptest:
+      - version: 3.2.1

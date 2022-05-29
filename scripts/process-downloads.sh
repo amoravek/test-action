@@ -152,7 +152,6 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
         debug "FINAL_URI: $FINAL_URI"
 
         while : ; do
-
             if [[ $GIT_TAGS == *"${ARTIFACT_NAME}_${VERSION}"* ]]; then
                 info "Artifact $ARTIFACT_NAME $VERSION already processed; skipping"
                 break
@@ -196,6 +195,15 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                 fi
             elif [[ "$URI_LOWERCASE" == "scp"* ]]; then # scp download
                 echo "scp"
+            elif [[ "$URI_LOWERCASE" == "sftp"* ]]; then # sftp download
+                
+                echo "Downloading from SFTP server ..."
+
+                SFTP_BASE_URL=${URI_LOWERCASE#"sftp://"}
+                echo "SFTP_BASE_URL: $SFTP_BASE_URL"
+
+
+
             else
                 warning "Error downloading $ARTIFACT_NAME ($TARGET_FILE_NAME)"
                 break
