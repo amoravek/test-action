@@ -9,7 +9,7 @@ ARTIFACTORY_PASSWORD=$4
 ARTIFACTORY_BASE_URL=$5
 ARTIFACTORY_REPO=$6
 DOWNLOAD_USER=$7
-DOWNLOAD_PASSWORD=$8
+# DOWNLOAD_PASSWORD=$8
 IDENTITY_FILE_B64=$9
 
 SCRIPT_FILE="$0"
@@ -105,6 +105,8 @@ function verify_checksum() {
 }
 
 check_inputs
+
+debug "Script parameters: $*"
 
 debug "ARTIFACTS_BATCH_FILE: $ARTIFACTS_BATCH_FILE"
 debug "VENDOR_METADATA_FILE: $VENDOR_METADATA_FILE"
@@ -216,10 +218,15 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
 
                 COMMAND_BODY=$DOWNLOAD_USER$TRANSFER_PASSWORD_HOLDER@$TRANSFER_BASE_URL
 
+                debug "COMMAND_BODY: $COMMAND_BODY"
+
                 if [[ ! -z $IDENTITY_FILE_B64 ]]; then
-                    TEMP_FILE_IDENTITY=$(tempfile)
-                    echo "$IDENTITY_FILE_B64" | base64 -d > $TEMP_FILE_IDENTITY
-                    IDENTITY_PARAM="-i $TEMP_FILE_IDENTITY"
+                    TEMP_IDENTITY_FILE=$(tempfile)
+
+                    debug "TEMP_IDENTITY_FILE: $TEMP_IDENTITY_FILE"
+
+                    echo "$IDENTITY_FILE_B64" | base64 -d > $TEMP_IDENTITY_FILE
+                    IDENTITY_PARAM="-i $TEMP_IDENTITY_FILE"
                 fi
 
                 if [[ "$URI_LOWERCASE" == "sftp"* ]]; then
@@ -228,7 +235,8 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
                     scp $IDENTITY_PARAM $COMMAND_BODY .
                 fi
 
-                cat myfile-3.2.1.txt
+                cat myfile-3.2.1.txt || true
+                cat myfile-1.2.3.txt || true
 
                 echo "==========================================="
 

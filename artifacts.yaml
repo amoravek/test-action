@@ -7,5 +7,7 @@ metadata:
     labels.here/any: optional-label
 spec:
   artifacts:
+    scptest:
+      - version: 1.2.3
     sftptest:
       - version: 3.2.1
