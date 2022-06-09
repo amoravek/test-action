@@ -155,6 +155,7 @@ for ARTIFACT_NAME in $(yq e ".spec.artifacts | keys" $ARTIFACTS_BATCH_FILE | awk
         debug "FINAL_URI: $FINAL_URI"
 
         while : ; do
+        
             if [[ $GIT_TAGS == *"${ARTIFACT_NAME}_${VERSION}"* ]]; then
                 info "Artifact $ARTIFACT_NAME $VERSION already processed; skipping"
                 break
